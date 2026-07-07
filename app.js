@@ -22,20 +22,14 @@ const ALL_CATEGORY = "全部";
 
 const categoryOrder = [
   ALL_CATEGORY,
-  "游戏广告",
-  "素材候选",
-  "汽车/产品",
-  "生成片段",
-  "软件素材",
+  "广告",
+  "短剧",
 ];
 
 const categoryColors = {
   [ALL_CATEGORY]: "#f1c75f",
-  游戏广告: "#79d28f",
-  素材候选: "#75b8ff",
-  "汽车/产品": "#ff9a6d",
-  生成片段: "#d2a1ff",
-  软件素材: "#65d5c8",
+  广告: "#79d28f",
+  短剧: "#75b8ff",
 };
 
 let activeIndex = 0;

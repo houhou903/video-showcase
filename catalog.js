@@ -2,19 +2,19 @@ window.VIDEO_CATALOG = [
   {
     "id": "001",
     "title": "蔚来沙漠公路追车广告",
-    "category": "汽车/产品",
+    "category": "广告",
     "duration": "00:49",
     "durationSeconds": 49,
-    "resolution": "未知",
-    "width": 0,
-    "height": 0,
-    "mb": 3.9,
+    "resolution": "2528x1080",
+    "width": 2528,
+    "height": 1080,
+    "mb": 61.76,
     "modified": "2026-06-09",
     "modifiedTime": "2026-06-09 18:17:58",
-    "folder": "videos",
-    "fileName": "001-蔚来沙漠公路追车广告.mp4",
-    "path": "videos/001-蔚来沙漠公路追车广告.mp4",
-    "src": "videos/001-%E8%94%9A%E6%9D%A5%E6%B2%99%E6%BC%A0%E5%85%AC%E8%B7%AF%E8%BF%BD%E8%BD%A6%E5%B9%BF%E5%91%8A.mp4",
+    "folder": "GitHub Release 高清资源",
+    "fileName": "001-nio-desert-chase.mp4",
+    "path": "https://github.com/houhou903/video-showcase/releases/download/hq-videos-20260707/001-nio-desert-chase.mp4",
+    "src": "https://github.com/houhou903/video-showcase/releases/download/hq-videos-20260707/001-nio-desert-chase.mp4",
     "poster": "posters/001.jpg",
     "previousId": "039",
     "priorIdBeforeHomogeneous": "034",
@@ -30,12 +30,14 @@ window.VIDEO_CATALOG = [
     "originalPath": "D:\\视频\\ES9\\视频\\6月8日(1).mov",
     "originalSrc": "file:///D:/%E8%A7%86%E9%A2%91/ES9/%E8%A7%86%E9%A2%91/6%E6%9C%888%E6%97%A5%281%29.mov",
     "publicOptimized": true,
-    "publicBuildTime": "2026-07-07 13:33:37"
+    "publicBuildTime": "2026-07-07 13:33:37",
+    "publicHighQuality": true,
+    "publicHighQualitySource": "GitHub Release hq-videos-20260707"
   },
   {
     "id": "002",
     "title": "古装男主朝堂对峙片段",
-    "category": "素材候选",
+    "category": "短剧",
     "duration": "01:35",
     "durationSeconds": 95,
     "resolution": "未知",
@@ -69,7 +71,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "003",
     "title": "黑衣女侠密林对峙片段",
-    "category": "素材候选",
+    "category": "短剧",
     "duration": "01:29",
     "durationSeconds": 89,
     "resolution": "未知",
@@ -103,7 +105,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "004",
     "title": "白衣仙侠女子与长者对话",
-    "category": "素材候选",
+    "category": "短剧",
     "duration": "01:19",
     "durationSeconds": 79,
     "resolution": "未知",
@@ -137,7 +139,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "005",
     "title": "竖屏古装师徒对话片段",
-    "category": "素材候选",
+    "category": "短剧",
     "duration": "00:39",
     "durationSeconds": 39,
     "resolution": "未知",
@@ -171,7 +173,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "006",
     "title": "巨型甲虫室内惊悚广告",
-    "category": "素材候选",
+    "category": "短剧",
     "duration": "00:50",
     "durationSeconds": 50,
     "resolution": "未知",
@@ -205,7 +207,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "007",
     "title": "黄石第一视角湖边钓猎",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:44",
     "durationSeconds": 44,
     "resolution": "未知",
@@ -240,7 +242,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "008",
     "title": "二次元角色走廊对话",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:22",
     "durationSeconds": 22,
     "resolution": "未知",
@@ -275,7 +277,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "009",
     "title": "SATANPIT藏货销售展示",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:34",
     "durationSeconds": 34,
     "resolution": "未知",
@@ -308,7 +310,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "010",
     "title": "W3废墟解救人质行动",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:31",
     "durationSeconds": 31,
     "resolution": "未知",
@@ -341,7 +343,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "011",
     "title": "W3防弹演讲台城市演说",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:21",
     "durationSeconds": 21,
     "resolution": "未知",
@@ -374,7 +376,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "012",
     "title": "PGAME宿敌对决道馆战",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:54",
     "durationSeconds": 54,
     "resolution": "未知",
@@ -407,7 +409,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "013",
     "title": "PGAME宠物陪伴甲虫进化",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:47",
     "durationSeconds": 47,
     "resolution": "未知",
@@ -440,7 +442,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "014",
     "title": "点击生长升级玩法参考",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:15",
     "durationSeconds": 15.083333,
     "resolution": "1280x720",
@@ -471,7 +473,7 @@ window.VIDEO_CATALOG = [
   {
     "id": "015",
     "title": "球赛现场金发角色广告",
-    "category": "游戏广告",
+    "category": "广告",
     "duration": "00:16",
     "durationSeconds": 16,
     "resolution": "未知",

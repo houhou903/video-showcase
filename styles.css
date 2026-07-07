@@ -312,6 +312,8 @@ button {
     linear-gradient(90deg, rgba(5, 6, 6, 0.92), rgba(5, 6, 6, 0.48) 34%, transparent 72%),
     linear-gradient(to top, rgba(5, 6, 6, 0.9), transparent 48%),
     linear-gradient(to bottom, rgba(5, 6, 6, 0.72), transparent 26%);
+  opacity: 1;
+  transition: opacity 720ms ease;
 }
 
 .stage-content {
@@ -334,7 +336,14 @@ button {
   background: var(--surface);
   box-shadow: var(--shadow);
   backdrop-filter: blur(22px);
+  opacity: 1;
   pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    opacity 620ms ease,
+    transform 620ms ease,
+    filter 620ms ease,
+    visibility 620ms ease;
 }
 
 .hero-number {
@@ -454,7 +463,27 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  opacity: 1;
   pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    opacity 620ms ease,
+    transform 620ms ease,
+    filter 620ms ease,
+    visibility 620ms ease;
+}
+
+body.stage-ui-idle:not(.is-intro) .hero-panel,
+body.stage-ui-idle:not(.is-intro) .quick-rail {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  filter: blur(8px);
+  transform: translateY(14px);
+}
+
+body.stage-ui-idle:not(.is-intro) .stage-scrim {
+  opacity: 0.24;
 }
 
 .rail-stat,

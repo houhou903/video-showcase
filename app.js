@@ -55,6 +55,45 @@ const categoryColors = {
 let activeIndex = 0;
 let activeCategoryFilter = ALL_CATEGORY;
 let cardObserver = null;
+let stageUiIdleTimer = 0;
+let lastStageUiActivityAt = Date.now();
+
+function isStageInView() {
+  const stage = document.querySelector("#stage");
+  if (!stage) return false;
+  const rect = stage.getBoundingClientRect();
+  return rect.top < window.innerHeight * 0.82 && rect.bottom > 120;
+}
+
+function showStageUi() {
+  document.body.classList.remove("stage-ui-idle");
+}
+
+function scheduleStageUiIdle() {
+  window.clearTimeout(stageUiIdleTimer);
+  if (document.body.classList.contains("is-intro") || !isStageInView()) {
+    showStageUi();
+    return;
+  }
+  const scheduledAt = lastStageUiActivityAt;
+  stageUiIdleTimer = window.setTimeout(() => {
+    const elapsed = Date.now() - lastStageUiActivityAt;
+    if (
+      scheduledAt === lastStageUiActivityAt &&
+      elapsed >= 2100 &&
+      !document.body.classList.contains("is-intro") &&
+      isStageInView()
+    ) {
+      document.body.classList.add("stage-ui-idle");
+    }
+  }, 2200);
+}
+
+function handleStageUiActivity() {
+  lastStageUiActivityAt = Date.now();
+  showStageUi();
+  scheduleStageUiIdle();
+}
 
 function setText(node, value) {
   if (node) node.textContent = String(value ?? "");
@@ -313,10 +352,18 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") moveActive(1);
 });
 
+["pointermove", "pointerdown", "touchstart"].forEach((eventName) => {
+  window.addEventListener(eventName, handleStageUiActivity, { passive: true });
+});
+
+window.addEventListener("keydown", handleStageUiActivity);
+window.addEventListener("scroll", handleStageUiActivity, { passive: true });
+
 function hideIntro() {
   if (!intro) return;
   intro.classList.add("is-hidden");
   document.body.classList.remove("is-intro");
+  handleStageUiActivity();
   featureVideo.play().catch(() => {});
 }
 

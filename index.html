@@ -8,7 +8,7 @@
       content="EDY Video Showcase - 精选广告、游戏、汽车与影视片段作品集。"
     />
     <title>EDY Video Showcase</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=drawer-status-1" />
   </head>
   <body>
     <div class="intro" id="intro" aria-hidden="true">
@@ -58,7 +58,20 @@
         <div class="stage-scrim"></div>
 
         <div class="stage-content">
-          <aside class="hero-panel" aria-label="当前视频信息">
+          <div class="stage-info-dock" id="stageInfoDock">
+            <button
+              class="info-dock-button"
+              id="infoToggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="stageInfoPanel"
+            >
+              <span>作品信息</span>
+            </button>
+          <aside class="hero-panel" id="stageInfoPanel" aria-label="当前视频信息">
+            <button class="info-close" id="infoClose" type="button" aria-label="收起作品信息">
+              收起
+            </button>
             <p class="eyebrow" id="activeCategory">分类</p>
             <div class="hero-number" id="activeNumber">001</div>
             <h1 id="activeTitle">正在加载</h1>
@@ -73,19 +86,27 @@
               <a class="quiet-link" href="#library">查看全部作品</a>
             </div>
           </aside>
+          </div>
 
-          <section class="quick-rail" aria-label="作品概览">
-            <div class="rail-stat">
-              <strong id="totalCount">0</strong>
-              <span>件作品</span>
+          <section class="quick-rail" aria-label="播放状态">
+            <div class="rail-now">
+              <strong id="activeCompactNumber">001</strong>
+              <span id="activeCompactTitle">正在加载</span>
             </div>
-            <div class="rail-stat">
-              <strong id="visibleCount">0</strong>
-              <span>当前显示</span>
+            <div class="rail-controls" aria-label="播放辅助控制">
+              <button class="status-button" id="soundButton" type="button">声音</button>
+              <button class="status-button" id="fullscreenButton" type="button">全屏</button>
             </div>
+            <button class="progress-track" id="progressTrack" type="button" aria-label="播放进度">
+              <span id="progressFill"></span>
+            </button>
             <div class="rail-meta">
               <span id="activeFileName"></span>
               <span id="activeFolder"></span>
+            </div>
+            <div class="rail-counts">
+              <span><strong id="totalCount">0</strong> 件作品</span>
+              <span><strong id="visibleCount">0</strong> 当前显示</span>
             </div>
           </section>
         </div>
@@ -115,6 +136,6 @@
     </main>
 
     <script src="./catalog.js"></script>
-    <script src="./app.js?v=sound-58a7b33"></script>
+    <script src="./app.js?v=drawer-status-1"></script>
   </body>
 </html>

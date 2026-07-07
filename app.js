@@ -7,6 +7,8 @@ const activeTitle = document.querySelector("#activeTitle");
 const activeMeta = document.querySelector("#activeMeta");
 const activeFileName = document.querySelector("#activeFileName");
 const activeFolder = document.querySelector("#activeFolder");
+const activeCompactNumber = document.querySelector("#activeCompactNumber");
+const activeCompactTitle = document.querySelector("#activeCompactTitle");
 const totalCount = document.querySelector("#totalCount");
 const visibleCount = document.querySelector("#visibleCount");
 const searchInput = document.querySelector("#searchInput");
@@ -14,6 +16,13 @@ const categoryTabs = document.querySelector("#categoryTabs");
 const workGrid = document.querySelector("#workGrid");
 const prevButton = document.querySelector("#prevButton");
 const nextButton = document.querySelector("#nextButton");
+const stageInfoDock = document.querySelector("#stageInfoDock");
+const infoToggle = document.querySelector("#infoToggle");
+const infoClose = document.querySelector("#infoClose");
+const soundButton = document.querySelector("#soundButton");
+const fullscreenButton = document.querySelector("#fullscreenButton");
+const progressTrack = document.querySelector("#progressTrack");
+const progressFill = document.querySelector("#progressFill");
 const intro = document.querySelector("#intro");
 const introCanvas = document.querySelector("#introCanvas");
 const enterButton = document.querySelector("#enterButton");
@@ -96,12 +105,46 @@ function handleStageUiActivity() {
   scheduleStageUiIdle();
 }
 
+function formatClock(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "00:00";
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.floor(seconds % 60);
+  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
+
+function updateSoundButton() {
+  if (!soundButton) return;
+  soundButton.textContent = featureVideo.muted ? "开启声音" : "关闭声音";
+  soundButton.setAttribute("aria-pressed", String(!featureVideo.muted));
+}
+
+function updatePlaybackProgress() {
+  if (!progressFill) return;
+  const duration = Number.isFinite(featureVideo.duration) ? featureVideo.duration : 0;
+  const current = Number.isFinite(featureVideo.currentTime) ? featureVideo.currentTime : 0;
+  const percent = duration > 0 ? Math.min(100, Math.max(0, (current / duration) * 100)) : 0;
+  progressFill.style.width = `${percent}%`;
+  setText(activeFileName, `${formatClock(current)} / ${formatClock(duration)}`);
+}
+
+function updateFullscreenButton() {
+  if (!fullscreenButton) return;
+  fullscreenButton.textContent = document.fullscreenElement ? "退出全屏" : "全屏";
+}
+
+function closeStageInfo(shouldSuppressHover = false) {
+  document.body.classList.remove("stage-info-open");
+  if (shouldSuppressHover) document.body.classList.add("stage-info-suppressed");
+  infoToggle?.setAttribute("aria-expanded", "false");
+}
+
 function enableStageSound() {
   stageSoundEnabled = true;
   featureVideo.muted = false;
   featureVideo.defaultMuted = false;
   featureVideo.removeAttribute("muted");
   if (featureVideo.volume === 0) featureVideo.volume = 1;
+  updateSoundButton();
 }
 
 function setText(node, value) {
@@ -155,8 +198,12 @@ function setActiveById(id, shouldScroll = true) {
   setText(activeNumber, item.id);
   setText(activeCategory, item.category);
   setText(activeTitle, item.title);
-  setText(activeFileName, `${item.duration} · ${item.resolution}`);
+  setText(activeCompactNumber, item.id);
+  setText(activeCompactTitle, item.title);
+  setText(activeFileName, `00:00 / ${item.duration}`);
   setText(activeFolder, item.category);
+  updateSoundButton();
+  updatePlaybackProgress();
 
   activeMeta.innerHTML = "";
   metaItems(item).forEach((meta) => {
@@ -360,10 +407,68 @@ searchInput.addEventListener("input", renderCards);
 prevButton.addEventListener("click", () => moveActive(-1));
 nextButton.addEventListener("click", () => moveActive(1));
 
+infoToggle?.addEventListener("click", () => {
+  document.body.classList.remove("stage-info-suppressed");
+  const isOpen = document.body.classList.toggle("stage-info-open");
+  infoToggle.setAttribute("aria-expanded", String(isOpen));
+  handleStageUiActivity();
+});
+
+infoClose?.addEventListener("click", () => {
+  closeStageInfo(true);
+  infoClose.blur();
+  handleStageUiActivity();
+});
+
+stageInfoDock?.addEventListener("mouseleave", () => {
+  document.body.classList.remove("stage-info-suppressed");
+});
+
+soundButton?.addEventListener("click", () => {
+  if (featureVideo.muted) {
+    enableStageSound();
+    featureVideo.play().catch(() => {});
+  } else {
+    stageSoundEnabled = false;
+    featureVideo.muted = true;
+    updateSoundButton();
+  }
+  handleStageUiActivity();
+});
+
+fullscreenButton?.addEventListener("click", () => {
+  const stage = document.querySelector("#stage");
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.();
+  } else {
+    stage?.requestFullscreen?.();
+  }
+  handleStageUiActivity();
+});
+
+progressTrack?.addEventListener("click", (event) => {
+  const duration = featureVideo.duration;
+  if (!Number.isFinite(duration) || duration <= 0) return;
+  const rect = progressTrack.getBoundingClientRect();
+  const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+  featureVideo.currentTime = ratio * duration;
+  updatePlaybackProgress();
+  handleStageUiActivity();
+});
+
+featureVideo.addEventListener("timeupdate", updatePlaybackProgress);
+featureVideo.addEventListener("loadedmetadata", updatePlaybackProgress);
+featureVideo.addEventListener("durationchange", updatePlaybackProgress);
+featureVideo.addEventListener("volumechange", updateSoundButton);
+document.addEventListener("fullscreenchange", updateFullscreenButton);
+
 window.addEventListener("keydown", (event) => {
   if (event.target === searchInput) return;
   if (event.key === "ArrowLeft") moveActive(-1);
   if (event.key === "ArrowRight") moveActive(1);
+  if (event.key === "Escape" && document.body.classList.contains("stage-info-open")) {
+    closeStageInfo(true);
+  }
 });
 
 ["pointermove", "pointerdown", "touchstart"].forEach((eventName) => {

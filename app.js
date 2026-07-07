@@ -123,8 +123,9 @@ function updatePlaybackProgress() {
   const duration = Number.isFinite(featureVideo.duration) ? featureVideo.duration : 0;
   const current = Number.isFinite(featureVideo.currentTime) ? featureVideo.currentTime : 0;
   const percent = duration > 0 ? Math.min(100, Math.max(0, (current / duration) * 100)) : 0;
+  const durationLabel = duration > 0 ? formatClock(duration) : catalog[activeIndex]?.duration || "00:00";
   progressFill.style.width = `${percent}%`;
-  setText(activeFileName, `${formatClock(current)} / ${formatClock(duration)}`);
+  setText(activeFileName, `${formatClock(current)} / ${durationLabel}`);
 }
 
 function updateFullscreenButton() {

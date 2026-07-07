@@ -3,74 +3,92 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>EDY Video Library</title>
+    <meta
+      name="description"
+      content="EDY Video Showcase - 精选广告、游戏、汽车与影视片段作品集。"
+    />
+    <title>EDY Video Showcase</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#stage" aria-label="EDY Video Library">
-        <span class="brand-mark">E</span>
-        <span>
-          <strong>EDY Video Library</strong>
-          <small>全量编号视频库</small>
+      <a class="brand" href="#stage" aria-label="EDY Video Showcase">
+        <span class="brand-mark">EDY</span>
+        <span class="brand-copy">
+          <strong>Video Showcase</strong>
+          <small>精选作品集</small>
         </span>
       </a>
       <nav class="topnav" aria-label="页面导航">
-        <a href="#stage">播放器</a>
-        <a href="#library">编号库</a>
-        <a href="./video-index.csv">清单</a>
+        <a href="#stage">首屏</a>
+        <a href="#library">作品</a>
+        <a href="./manifest.csv">清单</a>
       </nav>
     </header>
 
     <main>
-      <section class="stage" id="stage" aria-label="当前视频">
-        <div class="stage-media">
-          <video
-            id="featureVideo"
-            class="feature-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            controls
-          ></video>
-        </div>
+      <section class="stage" id="stage" aria-label="精选视频播放区">
+        <video
+          id="featureVideo"
+          class="feature-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          controls
+        ></video>
 
-        <aside class="detail-panel" aria-label="当前视频信息">
-          <div class="current-number" id="activeNumber">001</div>
-          <p class="eyebrow" id="activeCategory">分类</p>
-          <h1 id="activeTitle">正在加载</h1>
-          <div class="meta-grid" id="activeMeta"></div>
-          <dl class="source-list">
-            <div>
-              <dt>文件名</dt>
-              <dd id="activeFileName"></dd>
+        <div class="stage-scrim"></div>
+
+        <div class="stage-content">
+          <aside class="hero-panel" aria-label="当前视频信息">
+            <p class="eyebrow" id="activeCategory">分类</p>
+            <div class="hero-number" id="activeNumber">001</div>
+            <h1 id="activeTitle">正在加载</h1>
+            <div class="meta-grid" id="activeMeta"></div>
+            <div class="hero-actions" aria-label="视频切换">
+              <button class="icon-button" type="button" id="prevButton" aria-label="上一条">
+                <span aria-hidden="true">‹</span>
+              </button>
+              <button class="icon-button" type="button" id="nextButton" aria-label="下一条">
+                <span aria-hidden="true">›</span>
+              </button>
+              <a class="quiet-link" href="#library">查看全部作品</a>
             </div>
-            <div>
-              <dt>位置</dt>
-              <dd id="activeFolder"></dd>
+          </aside>
+
+          <section class="quick-rail" aria-label="作品概览">
+            <div class="rail-stat">
+              <strong id="totalCount">0</strong>
+              <span>件作品</span>
             </div>
-          </dl>
-          <p class="path-line" id="activePath"></p>
-        </aside>
+            <div class="rail-stat">
+              <strong id="visibleCount">0</strong>
+              <span>当前显示</span>
+            </div>
+            <div class="rail-meta">
+              <span id="activeFileName"></span>
+              <span id="activeFolder"></span>
+            </div>
+          </section>
+        </div>
       </section>
 
-      <section class="library" id="library" aria-label="视频编号库">
+      <section class="library" id="library" aria-label="视频作品库">
         <div class="library-head">
           <div>
-            <p class="eyebrow">Deduped Local Library</p>
-            <h2>按编号挑选，后面可直接报编号删除</h2>
+            <p class="eyebrow">Curated Library</p>
+            <h2>按编号浏览和筛选作品</h2>
           </div>
-          <div class="stats">
-            <span><strong id="totalCount">0</strong> 已保留</span>
-            <span><strong id="visibleCount">0</strong> 当前显示</span>
-          </div>
+          <p class="library-note">
+            点击任意卡片即可切换首屏播放；搜索支持编号、标题、分类和文件名。
+          </p>
         </div>
 
         <div class="toolbar" aria-label="筛选工具">
           <label class="search-box">
             <span>搜索</span>
-            <input id="searchInput" type="search" placeholder="编号、文件名、路径" />
+            <input id="searchInput" type="search" placeholder="编号、标题、分类、文件名" />
           </label>
           <div class="category-tabs" id="categoryTabs" aria-label="分类筛选"></div>
         </div>

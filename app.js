@@ -7,47 +7,48 @@ const activeTitle = document.querySelector("#activeTitle");
 const activeMeta = document.querySelector("#activeMeta");
 const activeFileName = document.querySelector("#activeFileName");
 const activeFolder = document.querySelector("#activeFolder");
-const activePath = document.querySelector("#activePath");
 const totalCount = document.querySelector("#totalCount");
 const visibleCount = document.querySelector("#visibleCount");
 const searchInput = document.querySelector("#searchInput");
 const categoryTabs = document.querySelector("#categoryTabs");
 const workGrid = document.querySelector("#workGrid");
+const prevButton = document.querySelector("#prevButton");
+const nextButton = document.querySelector("#nextButton");
+
+const ALL_CATEGORY = "全部";
 
 const categoryOrder = [
-  "全部",
-  "D盘视频",
-  "生成片段",
+  ALL_CATEGORY,
   "游戏广告",
-  "汽车/产品",
-  "软件素材",
   "素材候选",
-  "现代西部",
-  "角色设定",
-  "场景动线",
-  "汽车动势",
+  "汽车/产品",
+  "生成片段",
+  "软件素材",
 ];
 
 const categoryColors = {
-  全部: "#f2c65c",
-  D盘视频: "#8dd5c1",
-  生成片段: "#ff765f",
-  游戏广告: "#b8df62",
-  "汽车/产品": "#ff9f6e",
-  软件素材: "#7db9ff",
-  素材候选: "#c7a6ff",
-  现代西部: "#f2c65c",
-  角色设定: "#8dd5c1",
-  场景动线: "#7db9ff",
-  汽车动势: "#ff9f6e",
+  [ALL_CATEGORY]: "#f1c75f",
+  游戏广告: "#79d28f",
+  素材候选: "#75b8ff",
+  "汽车/产品": "#ff9a6d",
+  生成片段: "#d2a1ff",
+  软件素材: "#65d5c8",
 };
 
 let activeIndex = 0;
-let activeCategoryFilter = "全部";
+let activeCategoryFilter = ALL_CATEGORY;
 let cardObserver = null;
 
-function escapeText(value) {
-  return String(value ?? "");
+function setText(node, value) {
+  if (node) node.textContent = String(value ?? "");
+}
+
+function getAccent(category) {
+  return categoryColors[category] || "#f1c75f";
+}
+
+function setAccent(category) {
+  document.documentElement.style.setProperty("--accent", getAccent(category));
 }
 
 function statCounts() {
@@ -57,14 +58,19 @@ function statCounts() {
   }, {});
 }
 
-function setAccent(category) {
-  const color = categoryColors[category] || categoryColors["素材候选"];
-  document.documentElement.style.setProperty("--accent", color);
+function metaItems(item) {
+  return [
+    { label: "时长", value: item.duration },
+    { label: "规格", value: item.resolution },
+    { label: "大小", value: `${item.mb} MB` },
+    { label: "日期", value: item.modified },
+  ];
 }
 
 function setActiveById(id, shouldScroll = true) {
   const index = catalog.findIndex((item) => item.id === id);
   if (index === -1) return;
+
   activeIndex = index;
   const item = catalog[index];
   setAccent(item.category);
@@ -76,16 +82,20 @@ function setActiveById(id, shouldScroll = true) {
   featureVideo.load();
   featureVideo.play().catch(() => {});
 
-  activeNumber.textContent = item.id;
-  activeCategory.textContent = item.category;
-  activeTitle.textContent = item.title;
-  activeFileName.textContent = item.fileName;
-  activeFolder.textContent = item.folder;
-  activePath.textContent = item.path;
+  setText(activeNumber, item.id);
+  setText(activeCategory, item.category);
+  setText(activeTitle, item.title);
+  setText(activeFileName, item.fileName);
+  setText(activeFolder, item.folder);
+
   activeMeta.innerHTML = "";
-  [item.duration, item.resolution, `${item.mb} MB`, item.modified].forEach((value) => {
+  metaItems(item).forEach((meta) => {
     const chip = document.createElement("span");
-    chip.textContent = value;
+    const label = document.createElement("small");
+    const value = document.createElement("strong");
+    label.textContent = meta.label;
+    value.textContent = meta.value;
+    chip.append(label, value);
     activeMeta.appendChild(chip);
   });
 
@@ -98,10 +108,16 @@ function setActiveById(id, shouldScroll = true) {
   }
 }
 
+function moveActive(delta) {
+  if (!catalog.length) return;
+  const nextIndex = (activeIndex + delta + catalog.length) % catalog.length;
+  setActiveById(catalog[nextIndex].id, false);
+}
+
 function matchesFilters(item) {
   const query = searchInput.value.trim().toLowerCase();
   const inCategory =
-    activeCategoryFilter === "全部" || item.category === activeCategoryFilter;
+    activeCategoryFilter === ALL_CATEGORY || item.category === activeCategoryFilter;
   if (!inCategory) return false;
   if (!query) return true;
   return [
@@ -118,37 +134,88 @@ function matchesFilters(item) {
     .includes(query);
 }
 
+function makePreview(item) {
+  const media = document.createElement("span");
+  media.className = "card-media";
+
+  if (item.poster) {
+    const image = document.createElement("img");
+    image.className = "card-poster";
+    image.src = item.poster;
+    image.alt = "";
+    image.loading = "lazy";
+    media.appendChild(image);
+  }
+
+  const video = document.createElement("video");
+  video.className = "card-preview";
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = "metadata";
+  video.dataset.src = item.src;
+  if (item.poster) video.poster = item.poster;
+
+  const fallback = document.createElement("span");
+  fallback.className = "poster-fallback";
+  fallback.style.setProperty("--accent", getAccent(item.category));
+
+  const number = document.createElement("strong");
+  number.textContent = item.id;
+  const label = document.createElement("small");
+  label.textContent = item.category;
+  fallback.append(number, label);
+
+  media.append(video, fallback);
+  return media;
+}
+
 function makeCard(item) {
   const card = document.createElement("button");
   card.className = "work-card";
   card.type = "button";
   card.dataset.videoId = item.id;
-  card.style.setProperty("--accent", categoryColors[item.category]);
+  card.style.setProperty("--accent", getAccent(item.category));
 
-  const poster = item.poster
-    ? `<img class="work-card-poster" src="${item.poster}" alt="" loading="lazy" />`
-    : `<span class="poster-fallback"><strong>${item.id}</strong><small>${escapeText(item.category)}</small></span>`;
+  const media = makePreview(item);
 
-  card.innerHTML = `
-    ${poster}
-    <video class="card-preview" muted loop playsinline preload="none" data-src="${item.src}"${item.poster ? ` poster="${item.poster}"` : ""}></video>
-    <span class="work-card-content">
-      <span class="card-kicker">${item.id} · ${escapeText(item.category)}</span>
-      <h3>${escapeText(item.title)}</h3>
-      <p>${escapeText(item.duration)} · ${escapeText(item.resolution)} · ${item.mb} MB</p>
-    </span>
-  `;
+  const content = document.createElement("span");
+  content.className = "work-card-content";
 
-  const preview = card.querySelector(".card-preview");
-  card.addEventListener("mouseenter", () => {
+  const kicker = document.createElement("span");
+  kicker.className = "card-kicker";
+  kicker.textContent = `${item.id} · ${item.category}`;
+
+  const title = document.createElement("h3");
+  title.textContent = item.title;
+
+  const meta = document.createElement("p");
+  meta.textContent = `${item.duration} · ${item.resolution} · ${item.mb} MB`;
+
+  content.append(kicker, title, meta);
+  card.append(media, content);
+
+  const preview = media.querySelector(".card-preview");
+  const startPreview = () => {
     if (!preview.src) preview.src = preview.dataset.src;
     preview.play().catch(() => {});
-  });
-  card.addEventListener("mouseleave", () => {
-    preview.pause();
-  });
+  };
+  const stopPreview = () => preview.pause();
+
+  card.addEventListener("mouseenter", startPreview);
+  card.addEventListener("mouseleave", stopPreview);
+  card.addEventListener("focus", startPreview);
+  card.addEventListener("blur", stopPreview);
   card.addEventListener("click", () => setActiveById(item.id));
+
   return card;
+}
+
+function renderEmptyState() {
+  const empty = document.createElement("div");
+  empty.className = "empty-state";
+  empty.textContent = "没有匹配的视频";
+  workGrid.appendChild(empty);
 }
 
 function renderCards() {
@@ -159,6 +226,7 @@ function renderCards() {
   const fragment = document.createDocumentFragment();
   filtered.forEach((item) => fragment.appendChild(makeCard(item)));
   workGrid.appendChild(fragment);
+  if (!filtered.length) renderEmptyState();
 
   if (cardObserver) cardObserver.disconnect();
   cardObserver = new IntersectionObserver(
@@ -170,12 +238,15 @@ function renderCards() {
         cardObserver.unobserve(entry.target);
       });
     },
-    { rootMargin: "560px 0px" },
+    { rootMargin: "420px 0px" },
   );
-  document.querySelectorAll(".work-card").forEach((card) => cardObserver.observe(card));
 
-  document.querySelectorAll("[data-video-id]").forEach((card) => {
-    card.classList.toggle("is-active", card.dataset.videoId === catalog[activeIndex]?.id);
+  document.querySelectorAll(".work-card").forEach((card) => {
+    cardObserver.observe(card);
+    card.classList.toggle(
+      "is-active",
+      card.dataset.videoId === catalog[activeIndex]?.id,
+    );
   });
 }
 
@@ -183,14 +254,20 @@ function renderCategoryTabs() {
   const counts = statCounts();
   categoryTabs.innerHTML = "";
   categoryOrder
-    .filter((category) => category === "全部" || counts[category])
+    .filter((category) => category === ALL_CATEGORY || counts[category])
     .forEach((category) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "category-tab";
       button.dataset.category = category;
-      button.style.setProperty("--accent", categoryColors[category]);
-      button.innerHTML = `<span>${category}</span><strong>${category === "全部" ? catalog.length : counts[category]}</strong>`;
+      button.style.setProperty("--accent", getAccent(category));
+
+      const label = document.createElement("span");
+      label.textContent = category;
+      const count = document.createElement("strong");
+      count.textContent = category === ALL_CATEGORY ? catalog.length : counts[category];
+      button.append(label, count);
+
       button.addEventListener("click", () => {
         activeCategoryFilter = category;
         document.querySelectorAll(".category-tab").forEach((tab) => {
@@ -200,7 +277,10 @@ function renderCategoryTabs() {
       });
       categoryTabs.appendChild(button);
     });
-  categoryTabs.querySelector("[data-category='全部']")?.classList.add("is-active");
+
+  categoryTabs
+    .querySelector(`[data-category="${ALL_CATEGORY}"]`)
+    ?.classList.add("is-active");
 }
 
 totalCount.textContent = catalog.length;
@@ -209,3 +289,11 @@ renderCards();
 if (catalog.length) setActiveById(catalog[0].id, false);
 
 searchInput.addEventListener("input", renderCards);
+prevButton.addEventListener("click", () => moveActive(-1));
+nextButton.addEventListener("click", () => moveActive(1));
+
+window.addEventListener("keydown", (event) => {
+  if (event.target === searchInput) return;
+  if (event.key === "ArrowLeft") moveActive(-1);
+  if (event.key === "ArrowRight") moveActive(1);
+});

@@ -1,4 +1,4 @@
-# Video Showcase Public Site
+# 侯德瀚影像作品集 Public Site
 
 这是可发布到 GitHub Pages 的公开网站版本。上传本文件夹内所有文件到公开仓库根目录，然后开启 GitHub Pages 即可。
 

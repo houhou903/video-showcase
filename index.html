@@ -36,7 +36,6 @@
       <nav class="topnav" aria-label="页面导航">
         <a href="#stage">首屏</a>
         <a href="#library">作品</a>
-        <a href="./manifest.csv">清单</a>
       </nav>
     </header>
 
@@ -50,6 +49,10 @@
           loop
           playsinline
           controls
+          controlslist="nodownload noplaybackrate noremoteplayback"
+          disablepictureinpicture
+          disableremoteplayback
+          preload="metadata"
         ></video>
 
         <div class="stage-scrim"></div>

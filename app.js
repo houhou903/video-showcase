@@ -18,6 +18,26 @@ const intro = document.querySelector("#intro");
 const introCanvas = document.querySelector("#introCanvas");
 const enterButton = document.querySelector("#enterButton");
 
+const protectedMediaSelector = "video, img, .card-media, .feature-video";
+
+function protectMediaElement(video) {
+  if (!video) return;
+  video.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
+  video.setAttribute("disablepictureinpicture", "");
+  video.setAttribute("disableremoteplayback", "");
+  video.setAttribute("draggable", "false");
+}
+
+protectMediaElement(featureVideo);
+
+document.addEventListener("contextmenu", (event) => {
+  if (event.target.closest(protectedMediaSelector)) event.preventDefault();
+});
+
+document.addEventListener("dragstart", (event) => {
+  if (event.target.closest(protectedMediaSelector)) event.preventDefault();
+});
+
 const ALL_CATEGORY = "全部";
 
 const categoryOrder = [
@@ -82,8 +102,8 @@ function setActiveById(id, shouldScroll = true) {
   setText(activeNumber, item.id);
   setText(activeCategory, item.category);
   setText(activeTitle, item.title);
-  setText(activeFileName, item.fileName);
-  setText(activeFolder, item.folder);
+  setText(activeFileName, `${item.duration} · ${item.resolution}`);
+  setText(activeFolder, item.category);
 
   activeMeta.innerHTML = "";
   metaItems(item).forEach((meta) => {
@@ -121,9 +141,6 @@ function matchesFilters(item) {
     item.id,
     item.title,
     item.category,
-    item.fileName,
-    item.folder,
-    item.path,
     item.resolution,
   ]
     .join(" ")
@@ -151,6 +168,7 @@ function makePreview(item) {
   video.playsInline = true;
   video.preload = "metadata";
   video.dataset.src = item.src;
+  protectMediaElement(video);
   if (item.poster) video.poster = item.poster;
 
   const fallback = document.createElement("span");

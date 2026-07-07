@@ -57,6 +57,7 @@ let activeCategoryFilter = ALL_CATEGORY;
 let cardObserver = null;
 let stageUiIdleTimer = 0;
 let lastStageUiActivityAt = Date.now();
+let stageSoundEnabled = false;
 
 function isStageInView() {
   const stage = document.querySelector("#stage");
@@ -93,6 +94,14 @@ function handleStageUiActivity() {
   lastStageUiActivityAt = Date.now();
   showStageUi();
   scheduleStageUiIdle();
+}
+
+function enableStageSound() {
+  stageSoundEnabled = true;
+  featureVideo.muted = false;
+  featureVideo.defaultMuted = false;
+  featureVideo.removeAttribute("muted");
+  if (featureVideo.volume === 0) featureVideo.volume = 1;
 }
 
 function setText(node, value) {
@@ -135,6 +144,11 @@ function setActiveById(id, shouldScroll = true) {
   featureVideo.removeAttribute("poster");
   if (item.poster) featureVideo.poster = item.poster;
   featureVideo.src = item.src;
+  if (stageSoundEnabled) {
+    enableStageSound();
+  } else {
+    featureVideo.muted = true;
+  }
   featureVideo.load();
   featureVideo.play().catch(() => {});
 
@@ -363,6 +377,7 @@ function hideIntro() {
   if (!intro) return;
   intro.classList.add("is-hidden");
   document.body.classList.remove("is-intro");
+  enableStageSound();
   handleStageUiActivity();
   featureVideo.play().catch(() => {});
 }
@@ -485,6 +500,10 @@ if (intro) {
   document.body.classList.add("is-intro");
   featureVideo.pause();
   const stopParticles = runIntroParticles();
+  enterButton?.addEventListener("pointerdown", () => {
+    enableStageSound();
+    featureVideo.play().catch(() => {});
+  });
   enterButton?.addEventListener("click", () => {
     hideIntro();
     window.setTimeout(stopParticles, 760);

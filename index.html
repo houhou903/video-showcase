@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EDY Video Library</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#stage" aria-label="EDY Video Library">
+        <span class="brand-mark">E</span>
+        <span>
+          <strong>EDY Video Library</strong>
+          <small>全量编号视频库</small>
+        </span>
+      </a>
+      <nav class="topnav" aria-label="页面导航">
+        <a href="#stage">播放器</a>
+        <a href="#library">编号库</a>
+        <a href="./video-index.csv">清单</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="stage" id="stage" aria-label="当前视频">
+        <div class="stage-media">
+          <video
+            id="featureVideo"
+            class="feature-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            controls
+          ></video>
+        </div>
+
+        <aside class="detail-panel" aria-label="当前视频信息">
+          <div class="current-number" id="activeNumber">001</div>
+          <p class="eyebrow" id="activeCategory">分类</p>
+          <h1 id="activeTitle">正在加载</h1>
+          <div class="meta-grid" id="activeMeta"></div>
+          <dl class="source-list">
+            <div>
+              <dt>文件名</dt>
+              <dd id="activeFileName"></dd>
+            </div>
+            <div>
+              <dt>位置</dt>
+              <dd id="activeFolder"></dd>
+            </div>
+          </dl>
+          <p class="path-line" id="activePath"></p>
+        </aside>
+      </section>
+
+      <section class="library" id="library" aria-label="视频编号库">
+        <div class="library-head">
+          <div>
+            <p class="eyebrow">Deduped Local Library</p>
+            <h2>按编号挑选，后面可直接报编号删除</h2>
+          </div>
+          <div class="stats">
+            <span><strong id="totalCount">0</strong> 已保留</span>
+            <span><strong id="visibleCount">0</strong> 当前显示</span>
+          </div>
+        </div>
+
+        <div class="toolbar" aria-label="筛选工具">
+          <label class="search-box">
+            <span>搜索</span>
+            <input id="searchInput" type="search" placeholder="编号、文件名、路径" />
+          </label>
+          <div class="category-tabs" id="categoryTabs" aria-label="分类筛选"></div>
+        </div>
+
+        <div class="work-grid" id="workGrid"></div>
+      </section>
+    </main>
+
+    <script src="./catalog.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

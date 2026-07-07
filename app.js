@@ -26,6 +26,7 @@ const progressFill = document.querySelector("#progressFill");
 const intro = document.querySelector("#intro");
 const introCanvas = document.querySelector("#introCanvas");
 const enterButton = document.querySelector("#enterButton");
+const introSfx = document.querySelector("#introSfx");
 
 const protectedMediaSelector = "video, img, .card-media, .feature-video";
 
@@ -67,6 +68,8 @@ let cardObserver = null;
 let stageUiIdleTimer = 0;
 let lastStageUiActivityAt = Date.now();
 let stageSoundEnabled = false;
+let introSfxStarted = false;
+let introSfxPending = false;
 
 function isStageInView() {
   const stage = document.querySelector("#stage");
@@ -146,6 +149,27 @@ function enableStageSound() {
   featureVideo.removeAttribute("muted");
   if (featureVideo.volume === 0) featureVideo.volume = 1;
   updateSoundButton();
+}
+
+function playIntroSfx() {
+  if (!introSfx || introSfxStarted || introSfxPending) return;
+  introSfxPending = true;
+  introSfx.currentTime = 0;
+  introSfx.volume = 0.62;
+  const playAttempt = introSfx.play();
+  if (playAttempt?.then) {
+    playAttempt
+      .then(() => {
+        introSfxStarted = true;
+        introSfxPending = false;
+      })
+      .catch(() => {
+        introSfxPending = false;
+      });
+  } else {
+    introSfxStarted = true;
+    introSfxPending = false;
+  }
 }
 
 function setText(node, value) {
@@ -481,6 +505,7 @@ window.addEventListener("scroll", handleStageUiActivity, { passive: true });
 
 function hideIntro() {
   if (!intro) return;
+  playIntroSfx();
   intro.classList.add("is-hidden");
   document.body.classList.remove("is-intro");
   enableStageSound();

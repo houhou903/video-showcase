@@ -14,6 +14,9 @@ const categoryTabs = document.querySelector("#categoryTabs");
 const workGrid = document.querySelector("#workGrid");
 const prevButton = document.querySelector("#prevButton");
 const nextButton = document.querySelector("#nextButton");
+const intro = document.querySelector("#intro");
+const introCanvas = document.querySelector("#introCanvas");
+const enterButton = document.querySelector("#enterButton");
 
 const ALL_CATEGORY = "全部";
 
@@ -297,3 +300,140 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") moveActive(-1);
   if (event.key === "ArrowRight") moveActive(1);
 });
+
+function hideIntro() {
+  if (!intro) return;
+  intro.classList.add("is-hidden");
+  document.body.classList.remove("is-intro");
+  featureVideo.play().catch(() => {});
+}
+
+function runIntroParticles() {
+  if (!introCanvas || !intro) return () => {};
+
+  const context = introCanvas.getContext("2d");
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+  let particles = [];
+  let animationFrame = 0;
+  let isStopped = false;
+  const startedAt = performance.now();
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = introCanvas.clientWidth;
+    height = introCanvas.clientHeight;
+    introCanvas.width = Math.floor(width * dpr);
+    introCanvas.height = Math.floor(height * dpr);
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const count = Math.min(360, Math.max(160, Math.floor((width * height) / 6500)));
+    particles = Array.from({ length: count }, (_, index) => {
+      const angle = (index / count) * Math.PI * 2;
+      return {
+        angle,
+        radius: 80 + Math.random() * Math.min(width, height) * 0.48,
+        speed: 0.18 + Math.random() * 0.34,
+        size: 0.8 + Math.random() * 2.2,
+        drift: Math.random() * Math.PI * 2,
+        hue: Math.random() > 0.48 ? "teal" : "amber",
+      };
+    });
+  }
+
+  function draw(now) {
+    if (isStopped) return;
+
+    const elapsed = (now - startedAt) / 1000;
+    const progress = Math.min(elapsed / 2.6, 1);
+    const centerX = width / 2;
+    const centerY = height * 0.45;
+    context.clearRect(0, 0, width, height);
+
+    const glow = context.createRadialGradient(
+      centerX,
+      centerY,
+      0,
+      centerX,
+      centerY,
+      Math.max(width, height) * 0.58,
+    );
+    glow.addColorStop(0, "rgba(241,199,95,0.18)");
+    glow.addColorStop(0.36, "rgba(102,213,200,0.08)");
+    glow.addColorStop(1, "rgba(5,6,6,0)");
+    context.fillStyle = glow;
+    context.fillRect(0, 0, width, height);
+
+    context.globalCompositeOperation = "lighter";
+    particles.forEach((particle, index) => {
+      const orbit = particle.angle + elapsed * particle.speed + progress * 2.2;
+      const collapse = 1 - progress * 0.58;
+      const pulse = Math.sin(elapsed * 2.2 + particle.drift) * 18;
+      const radius = particle.radius * collapse + pulse + 56;
+      const wave = Math.sin(elapsed * 1.7 + index * 0.11) * 16;
+      const x = centerX + Math.cos(orbit) * radius + Math.cos(orbit * 2.1) * wave;
+      const y = centerY + Math.sin(orbit) * radius * 0.56 + Math.sin(orbit * 1.7) * wave;
+      const alpha = 0.2 + progress * 0.62;
+      context.beginPath();
+      context.fillStyle =
+        particle.hue === "teal"
+          ? `rgba(102,213,200,${alpha})`
+          : `rgba(241,199,95,${alpha})`;
+      context.arc(x, y, particle.size, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    const ringAlpha = Math.max(0, Math.min((elapsed - 0.7) / 1.4, 1));
+    if (ringAlpha) {
+      context.lineWidth = 1;
+      context.strokeStyle = `rgba(247,242,232,${0.18 * ringAlpha})`;
+      for (let ring = 0; ring < 3; ring += 1) {
+        context.beginPath();
+        context.ellipse(
+          centerX,
+          centerY,
+          130 + ring * 72 + Math.sin(elapsed + ring) * 8,
+          58 + ring * 30,
+          elapsed * 0.08,
+          0,
+          Math.PI * 2,
+        );
+        context.stroke();
+      }
+    }
+    context.globalCompositeOperation = "source-over";
+
+    if (elapsed > 2.45) {
+      intro.classList.add("is-ready");
+    }
+
+    animationFrame = requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+  animationFrame = requestAnimationFrame(draw);
+
+  return () => {
+    isStopped = true;
+    cancelAnimationFrame(animationFrame);
+    window.removeEventListener("resize", resize);
+  };
+}
+
+if (intro) {
+  document.body.classList.add("is-intro");
+  featureVideo.pause();
+  const stopParticles = runIntroParticles();
+  enterButton?.addEventListener("click", () => {
+    hideIntro();
+    window.setTimeout(stopParticles, 760);
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && intro.classList.contains("is-ready")) {
+      hideIntro();
+      window.setTimeout(stopParticles, 760);
+    }
+  });
+}
